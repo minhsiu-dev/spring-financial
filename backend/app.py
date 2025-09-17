@@ -1,4 +1,5 @@
 import random
+import os
 from flask import Flask, request, jsonify
 from models import db, Product
 from faker import Faker
@@ -7,7 +8,8 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 # Configure the database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///instance/products.db'
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'instance/data.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
@@ -49,9 +51,9 @@ def generate_products():
         existing_skus.add(sku)
         
         product = Product(
-            name=fake.ecommerce_name(),
+            name=fake.word(),
             description=fake.text(max_nb_chars=200),
-            category=fake.ecommerce_category(),
+            category=fake.word(),
             brand=fake.company(),
             price=round(random.uniform(10.0, 500.0), 2),
             stock_quantity=random.randint(0, 1000),
